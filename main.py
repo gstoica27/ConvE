@@ -217,7 +217,7 @@ if __name__ == '__main__':
     #Logger.GLOBAL_LOG_LEVEL = LogLevel.DEBUG
 
 
-    model_name = '{2}_{3}_{0}_{1}'.format(args.input_drop, args.hidden_drop, args.model, args.data)
+    model_name = '{2}_{0}_{1}'.format(args.input_drop, args.hidden_drop, args.model)
     model_path = 'saved_models/{0}_{1}.model'.format(args.data, model_name)
     print(f'Model name: {model_name} | Path: {model_path}')
 
