@@ -94,7 +94,7 @@ def ranking_and_hits(model, dev_rank_batcher, vocab, name):
         log.info('Hits left @{0}: {1}'.format(i+1, np.mean(hits_left[i])))
         log.info('Hits right @{0}: {1}'.format(i+1, np.mean(hits_right[i])))
         log.info('Hits @{0}: {1}'.format(i+1, np.mean(hits[i])))
-        metrics[f'Hits@{i}'] = np.mean(hits[i])
+        metrics[f'Hits@{i+1}'] = np.mean(hits[i])
     log.info('Mean rank left: {0}', np.mean(ranks_left))
     log.info('Mean rank right: {0}', np.mean(ranks_right))
     log.info('Mean rank: {0}', np.mean(ranks))
