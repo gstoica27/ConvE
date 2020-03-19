@@ -26,6 +26,7 @@ from spodernet.utils.util import Timer
 from spodernet.utils.cuda_utils import CUDATimer
 from spodernet.utils.cuda_utils import CUDATimer
 from spodernet.preprocessing.processors import TargetIdx2MultiTarget
+from collections import defaultdict
 np.set_printoptions(precision=3)
 
 timer = CUDATimer()
@@ -147,6 +148,8 @@ def main():
     print(params)
     print(np.sum(params))
 
+    best_dev_metrics = defaultdict(lambda: -np.inf)
+    best_test_metrics_at_best_dev = {}
     opt = torch.optim.Adam(model.parameters(), lr=Config.learning_rate, weight_decay=Config.L2)
     for epoch in range(epochs):
         model.train()
@@ -166,15 +169,32 @@ def main():
             train_batcher.state.loss = loss.cpu()
 
 
-        print('saving to {0}'.format(model_path))
-        torch.save(model.state_dict(), model_path)
+        # print('saving to {0}'.format(model_path))
+        # torch.save(model.state_dict(), model_path)
 
         model.eval()
         with torch.no_grad():
-            ranking_and_hits(model, dev_rank_batcher, vocab, 'dev_evaluation')
             if epoch % 3 == 0:
                 if epoch > 0:
-                    ranking_and_hits(model, test_rank_batcher, vocab, 'test_evaluation')
+                    dev_metrics = ranking_and_hits(model, dev_rank_batcher, vocab, 'dev_evaluation')
+                    test_metrics = ranking_and_hits(model, test_rank_batcher, vocab, 'test_evaluation')
+                    if dev_metrics['Hits@1'] > best_dev_metrics['Hits@1']:
+                        best_dev_metrics = dev_metrics
+                        best_test_metrics_at_best_dev = test_metrics
+                        print('saving to {0}'.format(model_path))
+                        torch.save(model.state_dict(), model_path)
+                    print('Best Metrics:')
+                    print('Dev | Hits@1: {} | Hits@3: {} | Hits@10: {} | MR: {} | MRR: {}'.format(
+                        best_dev_metrics['Hits@1'], best_dev_metrics['Hits@3'], best_dev_metrics['Hits@10'],
+                        best_dev_metrics['MR'], best_dev_metrics['MRR']
+                    ))
+                    print('Test| Hits@1: {} | Hits@3: {} | Hits@10: {} | MR: {} | MRR: {}'.format(
+                        best_test_metrics_at_best_dev['Hits@1'], best_test_metrics_at_best_dev['Hits@3'],
+                        best_test_metrics_at_best_dev['Hits@10'], best_test_metrics_at_best_dev['MR'],
+                        best_test_metrics_at_best_dev['MRR']
+                    ))
+
+
 
 
 if __name__ == '__main__':
