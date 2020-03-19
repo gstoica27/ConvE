@@ -217,7 +217,7 @@ if __name__ == '__main__':
     #Logger.GLOBAL_LOG_LEVEL = LogLevel.DEBUG
 
 
-    model_name = '{2}_{0}_{1}'.format(args.input_drop, args.hidden_drop, args.model)
+    model_name = '{2}_{3}_{0}_{1}'.format(args.input_drop, args.hidden_drop, args.model, args.data)
     model_path = 'saved_models/{0}_{1}.model'.format(args.data, model_name)
 
     torch.manual_seed(args.seed)
