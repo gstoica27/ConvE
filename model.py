@@ -1,3 +1,5 @@
+# Copied from https://github.com/TimDettmers/ConvE/blob/master/model.py
+
 import torch
 from torch.nn import functional as F, Parameter
 from torch.autograd import Variable
